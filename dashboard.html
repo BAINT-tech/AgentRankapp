@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AgentRankApp — Dashboard</title>
+  <style>
+    :root{
+      --green:#0f9d58;
+      --muted:#6b7280;
+      --bg:#ffffff;
+      --card:#f8fafc;
+      --radius:12px;
+      --shadow: 0 10px 28px rgba(11,17,30,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#0b1220}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #f1f5f9}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;overflow:hidden;border:1px solid #eee}
+    .logo img{width:100%;height:100%;object-fit:contain}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--green);color:#fff;padding:8px 14px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .container{max-width:1100px;margin:20px auto;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+    .panel{background:var(--card);border-radius:12px;padding:16px;border:1px solid #eef2f7;box-shadow:var(--shadow)}
+    .agents{display:grid;gap:12px}
+    .agent{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:10px;background:#fff;border:1px solid #f1f5f8}
+    .left{display:flex;gap:12px;align-items:center}
+    .avatar{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#9be7ff,#2979ff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+    .meta h4{margin:0;font-size:15px}
+    .meta p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .score{min-width:120px;text-align:right}
+    .score .num{font-weight:800;color:var(--green);font-size:18px}
+    .small{font-size:13px;color:var(--muted)}
+    .sidebar .stat{display:flex;justify-content:space-between;padding:10px;border-radius:8px;background:#fff;margin-bottom:10px;border:1px solid #f1f5f7}
+    .view-btn{background:transparent;border:1px solid #e6eef8;padding:8px 10px;border-radius:8px;cursor:pointer}
+    /* modal */
+    .modal-back{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;z-index:60}
+    .modal{background:#fff;border-radius:12px;max-width:720px;width:92%;padding:18px;border:1px solid #eef2f7;box-shadow:0 20px 40px rgba(2,6,23,0.24)}
+    .progress-bar{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-top:8px}
+    .progress-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#6bd37a);width:0%}
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr}
+      .sidebar{order:2}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo"><img src="https://i.ibb.co/5hQMj0k9/logo.png" alt="logo"></div>
+      <div>
+        <div style="font-weight:800">AgentRankApp</div>
+        <div style="font-size:12px;color:var(--muted)">Dashboard preview</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="window.location.href='index.html'">Back</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <h3 style="margin:0 0 10px">Top Agents</h3>
+          <div class="agents" id="agentsList">
+            <!-- agent rows injected by JS -->
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="panel">
+          <h4 style="margin:0 0 8px">Recent Activity</h4>
+          <div class="small">No live data in demo — this panel shows actions like agent submissions, rank updates and reviews.</div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="panel">
+          <h4 style="margin:0 0 12px">Overview</h4>
+          <div class="stat"><div class="small">Total Agents</div><div style="font-weight:800">28</div></div>
+          <div class="stat"><div class="small">Avg. Score</div><div style="font-weight:800">87%</div></div>
+          <div class="stat"><div class="small">Active Agents</div><div style="font-weight:800">19</div></div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="panel">
+          <h4 style="margin:0 0 12px">Quick Actions</h4>
+          <button class="view-btn" onclick="alert('This is a demo. Integrate agent submission form to allow developers to add agents.')">Submit Agent</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- modal -->
+  <div class="modal-back" id="modalBack">
+    <div class="modal" role="dialog" aria-modal="true" id="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong id="modalTitle">Agent Name</strong><div id="modalSubtitle" class="small" style="margin-top:4px"></div></div>
+        <button onclick="closeModal()" style="border:0;background:transparent;font-weight:700;cursor:pointer">✕</button>
+      </div>
+
+      <div style="margin-top:12px;font-size:14px;color:var(--muted)" id="modalDesc">Agent detail text</div>
+
+      <div style="margin-top:12px">
+        <div style="font-size:13px;color:var(--muted)">Performance</div>
+        <div class="progress-bar"><i id="perfBar" style="width:0%"></i></div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+        <button onclick="closeModal()" class="view-btn">Close</button>
+        <button class="btn" onclick="alert('Demo action: simulate launching agent')">Launch (demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // sample demo data
+    const AGENTS = [
+      {id:'ag1',name:'AstraAgent',desc:'Multi-tasking automation agent',score:92,trust:88,status:'Active'},
+      {id:'ag2',name:'EchoBot',desc:'Conversational assistant for finance',score:87,trust:80,status:'Active'},
+      {id:'ag3',name:'ScoutAI',desc:'Web data miner & summarizer',score:83,trust:74,status:'Active'},
+      {id:'ag4',name:'GuardNet',desc:'Security scanning agent',score:78,trust:71,status:'Inactive'},
+      {id:'ag5',name:'QuizMaster',desc:'Interactive trivia & learning agent',score:75,trust:69,status:'Active'}
+    ];
+
+    const agentsList = document.getElementById('agentsList');
+
+    function renderAgents(){
+      agentsList.innerHTML = '';
+      AGENTS.forEach(a=>{
+        const row = document.createElement('div');
+        row.className = 'agent';
+        row.innerHTML = `
+          <div class="left">
+            <div class="avatar">${a.name.split(' ').map(s=>s[0]).slice(0,2).join('')}</div>
+            <div class="meta">
+              <h4>${a.name}</h4>
+              <p>${a.desc}</p>
+            </div>
+          </div>
+          <div class="score">
+            <div class="num">${a.score}%</div>
+            <div class="small">Trust ${a.trust}% • ${a.status}</div>
+            <div style="margin-top:8px"><button class="view-btn" onclick="openModal('${a.id}')">View Details</button></div>
+          </div>
+        `;
+        agentsList.appendChild(row);
+      });
+    }
+
+    function openModal(id){
+      const agent = AGENTS.find(x=>x.id===id);
+      if(!agent) return;
+      document.getElementById('modalTitle').textContent = agent.name;
+      document.getElementById('modalSubtitle').textContent = `${agent.score}% score • Trust ${agent.trust}% • ${agent.status}`;
+      document.getElementById('modalDesc').textContent = agent.desc + ' — example metrics and demo stats are synthetic.';
+      document.getElementById('perfBar').style.width = agent.score + '%';
+      document.getElementById('modalBack').style.display = 'flex';
+      // simple small animation
+      setTimeout(()=>{document.getElementById('perfBar').style.transition='width 700ms ease'},50)
+    }
+
+    function closeModal(){
+      document.getElementById('modalBack').style.display = 'none';
+      document.getElementById('perfBar').style.width = '0%';
+      document.getElementById('perfBar').style.transition = '';
+    }
+
+    // init
+    renderAgents();
+  </script>
+
+</body>
+      </html>
